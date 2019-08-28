@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    我是index
+   这个是index首页
   </div>
 </template>
 

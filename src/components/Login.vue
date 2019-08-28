@@ -2,11 +2,12 @@
   <div class="login">
     <el-form ref="form" :model="form" status-icon :rules="rules" label-width="80px" res="form">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
+        <el-input @keyup.enter.native="login" v-model="form.username" placeholder="请输入用户名"></el-input>
+        <!-- .native是相当原生事件，监听子组件根元素事件 -->
       </el-form-item>
       <!-- 密码 -->
       <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
+        <el-input @keyup.enter.native="login" type="password" v-model="form.password" placeholder="请输入密码"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="login">登录</el-button>
