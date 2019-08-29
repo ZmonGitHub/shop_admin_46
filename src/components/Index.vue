@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-   这个是index首页
+
   <el-container>
     <el-header>
       <div class="login"><img src="../assets/logo1.png" alt=""></div>
