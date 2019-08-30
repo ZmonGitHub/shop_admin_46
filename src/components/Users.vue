@@ -11,7 +11,7 @@
       <el-input placeholder="请输入搜索关键字" v-model="query" class="inputSerch">
       <el-button slot="append" icon="el-icon-search" @click="serchBtn"></el-button>
       </el-input>
-      <el-button type="success" plain class="addBtn" >添加用户</el-button>
+      <el-button type="success" plain class="addBtn" @click="dialogVisible = true" >添加用户</el-button>
       </div>
     <!-- 下面是表格 -->
 
@@ -37,7 +37,8 @@
         </el-table-column>
         <el-table-column  label="操作" width="280">
           <template  v-slot:default="obj">
-           <el-button type="primary" icon="el-icon-edit" plain size="small"></el-button>
+            <!-- 修改功能 -->
+           <el-button type="primary" icon="el-icon-edit" plain size="small" @click="editBox(obj.row)"></el-button>
            <el-button type="danger" icon="el-icon-delete" plain size="small"  @click="openDel(obj.row.id)" ></el-button>
            <el-button type="success" icon="el-icon-check" plain size="small">分配角色</el-button>
            </template>
@@ -59,6 +60,59 @@
     </el-pagination>
   </div>
 
+  <!-- 这里是添加用户对话框 -->
+      <el-dialog
+      @closed="dialogClose"
+      title="添加用户"
+      :visible.sync="dialogVisible"
+      width="40%">
+      <!-- 此处为body部分，表单 -->
+      <el-form status-icon ref="form" :rules="rules" :model="form" label-width="80px">
+        <el-form-item label="用户名" prop="username">
+        <el-input placeholder="请输入用户名" v-model="form.username"></el-input>
+        </el-form-item>
+
+        <el-form-item label="密码" prop="password">
+        <el-input type="password" placeholder="请输入密码" v-model="form.password"></el-input>
+        </el-form-item>
+
+        <el-form-item label="邮箱" prop="email">
+        <el-input placeholder="请输入邮箱" v-model="form.email"></el-input>
+        </el-form-item>
+
+        <el-form-item label="手机" prop="mobile">
+        <el-input placeholder="请输入手机号码" v-model="form.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureAdd">确 定</el-button>
+      </span>
+    </el-dialog>
+  <!-- 这里是修改用户信息框 -->
+  <el-dialog
+      title="编辑用户信息"
+      :visible.sync="editVisible"
+      width="40%">
+ <el-form status-icon ref="editForm" :rules="rules" :model="editForm" label-width="80px">
+    <el-form-item label="用户名">
+        <el-tag type="info">{{ editForm.username }}</el-tag>
+     </el-form-item>
+    <el-form-item label="邮箱" prop="email">
+    <el-input placeholder="请输入邮箱" v-model="editForm.email"></el-input>
+    </el-form-item>
+
+    <el-form-item label="手机" prop="mobile">
+    <el-input placeholder="请输入手机号码" v-model="editForm.mobile"></el-input>
+    </el-form-item>
+
+ </el-form>
+
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="editVisible = false">取 消</el-button>
+    <el-button type="primary" @click="sureEdit">确 定</el-button>
+    </span>
+  </el-dialog>
   </div>
 </template>
 
@@ -71,8 +125,37 @@ export default {
       pagenum: 1,
       pagesize: 2,
       usersList: [],
-      total: 0
-
+      total: 0,
+      dialogVisible: false,
+      form: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      editVisible: false,
+      editForm: {
+        id: '',
+        username: '',
+        email: '',
+        mobile: '666'
+      },
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: ['change', 'blur'] },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: ['change', 'blur'] }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: ['change', 'blur'] },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: ['change', 'blur'] }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        mobile: [
+          { pattern: /^1[3-9]\d{9}/, message: '请输入正确的手机号', trigger: ['blur', 'change'] }
+        ]
+      }
     }
   },
   created () {
@@ -80,88 +163,178 @@ export default {
     this.getUserslist()
   },
   methods: {
+    editBox (row) {
+      console.log(row)
+      this.editVisible = true
+      this.editForm.id = row.id
+      this.editForm.username = row.username
+      this.editForm.mobile = row.mobile
+      this.editForm.email = row.email
+    },
+    async sureEdit () {
+      // 点击sure确定修改发送ajax
+      // 先校验再发送
+      try {
+        await this.$refs.editForm.validate()
+        // 验证也要等结果！！
+        const { id, email, mobile } = this.editForm
+        console.log(email, mobile)
+        const { meta } = await this.$axios.put(`users/${id}`, {
+          email, mobile
+        })
+        if (meta.status === 200) {
+          this.$message({
+            message: '修改信息成功！',
+            type: 'success'
+          })
+          // 成功就关闭模态框
+          this.editVisible = false
+          this.getUserslist()
+        } else {
+          this.$message({
+            message: meta.msg,
+            type: 'error'
+          })
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    dialogClose () {
+      // 对话框关闭就重置表单
+      this.$refs.form.resetFields()
+      // $refs是找到所有的ref 后面需要加上具体的name form
+    },
+    async sureAdd () {
+      try {
+        await this.$refs.form.validate()
+        // 发送ajax
+        const { meta } = await this.$axios.post('users', this.form)
+        console.log(meta)
+        if (meta.status === 201) {
+          this.$message({
+            message: '创建用户成功！',
+            type: 'success'
+          })
+          // 创建成功并重新渲染,关闭模态框
+          this.dialogVisible = false
+          // 跳转到最后一页，因为添加的内容在最后
+          // 每次添加总页数加1 并且用总页数除以每页页数等于当前页
+          this.total++
+          this.pagenum = Math.ceil(this.total / this.pagesize)
+          this.getUserslist()
+        } else {
+          this.$message({
+            message: meta.msg,
+            type: 'error'
+          })
+        }
+      } catch (e) {
+        // 如果有错误走到这里
+        console.log(e)
+      }
+    },
     serchBtn () {
       // 依据query来发送ajax
       this.getUserslist()
     },
-    openDel (id) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 到了这里就是确定删除，那就发ajax
-        this.$axios.delete(`users/${id}`).then(res => {
-          console.log(res)
-          const { meta } = res
-          if (meta.status === 200) {
-            // if判断，如果页数不是最后一页并且当前页只剩下一条数据，那么就--
-            if (this.usersList.length === 1 && this.pagenum > 1) {
-              this.pagenum--
-            }
-            // 如果请求成功就通知删除成功
-            this.$message.success(meta.msg)
-            // 重新渲染
-            this.getUserslist()
-          } else {
-            this.$message.error(meta.msg)
-          // 如果没有删除成功也通知错误
+    async openDel (id) {
+      // 手写优化版的点击删除,这里没有返回值，所以不用接受
+      try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          type: 'warning'
+        })
+        // 到这里就点击确定，发送ajax
+        const { meta } = await this.$axios.delete(`users/${id}`)
+        console.log('点击了确定')
+        if (meta.status === 200) {
+          // if判断，如果页数不是最后一页并且当前页只剩下一条数据，那么就--
+          if (this.usersList.length === 1 && this.pagenum > 1) {
+            this.pagenum--
           }
+          // 如果请求成功就通知删除成功
+          this.$message.success(meta.msg)
           // 重新渲染
-        }).catch((err) => {
-          console.log(666)
-          console.log(err)
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
+          this.getUserslist()
+        } else {
+          this.$message.error(meta.msg)
+          // 如果没有删除成功也通知错误
+        }
+      } catch (e) {
+        console.log(e)
+        console.log('点击了取消')
+      }
+      // this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   // 到了这里就是确定删除，那就发ajax
+      //   this.$axios.delete(`users/${id}`).then(res => {
+      //     console.log(res)
+      //     const { meta } = res
+      //     if (meta.status === 200) {
+      //       // if判断，如果页数不是最后一页并且当前页只剩下一条数据，那么就--
+      //       if (this.usersList.length === 1 && this.pagenum > 1) {
+      //         this.pagenum--
+      //       }
+      //       // 如果请求成功就通知删除成功
+      //       this.$message.success(meta.msg)
+      //       // 重新渲染
+      //       this.getUserslist()
+      //     } else {
+      //       this.$message.error(meta.msg)
+      //     // 如果没有删除成功也通知错误
+      //     }
+      //     // 重新渲染
+      //   }).catch((err) => {
+      //     console.log(666)
+      //     console.log(err)
+      //   })
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '已取消删除'
+      //   })
+      // })
     },
     // change是修改状态
-    changeState (row) {
+    async changeState (row) {
       // 需要传id 和 state
-
-      this.$axios.put(`users/${row.id}/state/${row.mg_state}`).then((res) => {
-        console.log(res)
-        const { meta } = res
-        if (meta.status === 200) {
-          this.$message({
-            message: meta.msg,
-            type: 'success'
-          })
-        }
-      }).catch((e) => {
+      // async和await优化成功
+      const { meta } = await this.$axios.put(`users/${row.id}/state/${row.mg_state}`)
+      if (meta.status === 200) {
         this.$message({
-          message: e,
+          message: meta.msg,
+          type: 'success'
+        })
+      } else {
+        this.$message({
+          message: meta.msg,
           type: 'error'
         })
-      })
+      }
     },
-    getUserslist () {
-      this.$axios.get('users', {
+    async getUserslist () {
+      const res = await this.$axios.get('users', {
         params: {
           // 配置的传递的参数
           query: this.query,
           pagenum: this.pagenum,
           pagesize: this.pagesize
-
         }
-
         // 配置请求头, 如果不在请求头中配置 token, 拿不到数据的
-      }).then(res => {
-        // 成功拿到数据存起来, 准备渲染
-        const { data, meta } = res
-        // console.log(res)
-        if (meta.status === 200) {
-          this.usersList = data.users
-          // console.log(data.users)
-          this.total = data.total
-        } else {
-          this.$message.error(meta.msg)
-        }
       })
+      // 成功拿到数据存起来, 准备渲染
+      const { data, meta } = res
+      // console.log(res)
+      if (meta.status === 200) {
+        this.usersList = data.users
+        // console.log(data.users)
+        this.total = data.total
+      } else {
+        this.$message.error(meta.msg)
+      }
     },
     handleCurrentChange (val) {
       // console.log(val)
