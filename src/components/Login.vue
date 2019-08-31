@@ -22,7 +22,7 @@
 
 <script>
 // 在使用ajax的页面引入 axios
-import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -45,56 +45,30 @@ export default {
   },
   methods: {
     reset () {
-      // console.log(5)
       this.$refs.form.resetFields()
     },
-    login () {
-      // console.log(1)
-      this.$refs.form.validate(flag => {
-        if (!flag) return
-        // 如果验证成功就发ajax，反之则return
-        console.log(flag)
-        // data是一个对象传过去就行了
-        // axios({
-        //   url: 'http://localhost:8888/api/private/v1/login',
-        //   data: this.form,
-        //   method: 'post'
-        // }).then(response => {
-        //   // 你用到this的时候一定要思考this指向！
-        //   const { meta } = response.data
-        //   console.log(meta.status)
-        //   if (meta.status !== 200) {
-        //     this.$message.error(meta.msg)
-        //   } else {
-        //     this.$message({
-        //       message: '登录成功',
-        //       type: 'success'
-        //       // 登录成功跳转到Index
-        //     })
-        //     this.$router.push('/index')
-        //   }
-        // })
-        // 第二种 axios写法
-        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          // 你用到this的时候一定要思考this指向！
-          const { meta, data } = res.data
-          console.log(meta.status)
-          if (meta.status !== 200) {
-            this.$message.error(meta.msg)
-          } else {
-            this.$message({
-              message: '登录成功',
-              type: 'success'
-              // 登录成功跳转到Index
-            })
-            console.log(data)
-            // 导航守卫,第一步在跳转页面前存token
-            localStorage.setItem('token', data.token)
-            // data.token是服务器返回的一个token令牌，需要手动存到浏览器localstorage中，在路由router哪里进行判断看登录者是否有token
-            this.$router.push('/index')
-          }
-        })
-      })
+    async login () {
+      try {
+        await this.$refs.form.validate()
+        const res = await this.$axios.post('login', this.form)
+        // 你用到this的时候一定要思考this指向！
+        const { meta, data } = res
+        if (meta.status !== 200) {
+          this.$message.error(meta.msg)
+        } else {
+          this.$message({
+            message: '登录成功',
+            type: 'success'
+            // 登录成功跳转到Index
+          })
+          // 导航守卫,第一步在跳转页面前存token
+          localStorage.setItem('token', data.token)
+          // data.token是服务器返回的一个token令牌，需要手动存到浏览器localstorage中，在路由router哪里进行判断看登录者是否有token
+          this.$router.push('/index')
+        }
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
