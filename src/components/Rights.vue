@@ -59,12 +59,12 @@ export default {
   methods: {
     async getRightsList () {
     // 发送ajax
-      console.log(66)
+      // console.log(66)
       const { data, meta } = await this.$axios.get('rights/list')
-      console.log(data, meta)
+      // console.log(data, meta)
       if (meta.status === 200) {
         this.rightsList = data
-        console.log(data)
+        // console.log(data)
       } else {
         this.message.error(meta.msg)
       }

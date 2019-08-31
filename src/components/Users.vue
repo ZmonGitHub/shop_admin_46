@@ -264,39 +264,6 @@ export default {
         console.log(e)
         console.log('点击了取消')
       }
-      // this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   // 到了这里就是确定删除，那就发ajax
-      //   this.$axios.delete(`users/${id}`).then(res => {
-      //     console.log(res)
-      //     const { meta } = res
-      //     if (meta.status === 200) {
-      //       // if判断，如果页数不是最后一页并且当前页只剩下一条数据，那么就--
-      //       if (this.usersList.length === 1 && this.pagenum > 1) {
-      //         this.pagenum--
-      //       }
-      //       // 如果请求成功就通知删除成功
-      //       this.$message.success(meta.msg)
-      //       // 重新渲染
-      //       this.getUserslist()
-      //     } else {
-      //       this.$message.error(meta.msg)
-      //     // 如果没有删除成功也通知错误
-      //     }
-      //     // 重新渲染
-      //   }).catch((err) => {
-      //     console.log(666)
-      //     console.log(err)
-      //   })
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已取消删除'
-      //   })
-      // })
     },
     // change是修改状态
     async changeState (row) {

@@ -32,6 +32,11 @@ axios.interceptors.request.use(function (config) {
 // 添加响应拦截器,响应过来的数据，拿到自己需要的就行，别的就不要了。方便使用
 axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
+  // console.log(response)
+  if (response.data.meta.status === 401) {
+    localStorage.removeItem('token')
+    router.push('/login')
+  }
   response = response.data
   return response
 }, function (error) {
