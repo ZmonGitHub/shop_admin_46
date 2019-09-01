@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <el-button type="success" plain>添加商品</el-button>
+    <el-button type="success" plain @click="goodsAdd">添加商品</el-button>
     <el-table style="width: 100%" :data="goodsList" >
        <el-table-column
         type="index"
@@ -59,6 +59,12 @@ export default {
     this.getGoodsList()
   },
   methods: {
+    goodsAdd () {
+      // console.log(66)
+      // 点击跳转到goodsadd,不是通过路由跳转的，需要自己携带头，
+      this.$router.push('/goodsAdd')
+      // 这个用router整个路由，不是当前路由
+    },
     handleSizeChange (val) {
       // console.log(`每页 ${val} 条`)
       this.pagesize = val
