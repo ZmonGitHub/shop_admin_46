@@ -13,44 +13,21 @@
       <el-aside width="200px">
         <!-- 给Menu开启router模式，会以path进行路由跳转 -->
     <el-menu router unique-opened
-      default-active="2"
+      :default-active="defaultActive"
       class="el-menu-vertical-demo"
       background-color="#545c64"
       text-color="#fff"
       active-text-color="#ffd04b">
-      <el-submenu index="1">
-
+      <!-- 第一个 -->
+      <el-submenu :index="item.path" v-for="item in leftList" :key="item.id">
+        <!-- 一级权限好了 -->
         <template slot="title">
           <i class="el-icon-location"></i>
-          <span>用户管理</span>
+          <span>{{ item.authName }}</span>
         </template>
+        <!-- 二级权限 -->
         <template slot="title"></template>
-        <el-menu-item index="users"><i class="el-icon-menu"></i>用户列表</el-menu-item>
-
-      </el-submenu>
-
-      <el-submenu index="2">
-
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>权限管理</span>
-        </template>
-        <template slot="title"></template>
-        <el-menu-item index="roles"><i class="el-icon-menu"></i>角色列表</el-menu-item>
-        <el-menu-item index="rights"><i class="el-icon-menu"></i>权限列表</el-menu-item>
-
-      </el-submenu>
-
-      <el-submenu index="3">
-
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>商品管理</span>
-        </template>
-        <template slot="title"></template>
-        <el-menu-item index="goods"><i class="el-icon-menu"></i>商品列表</el-menu-item>
-        <el-menu-item index="3-2"><i class="el-icon-menu"></i>分类参数</el-menu-item>
-        <el-menu-item index="categories"><i class="el-icon-menu"></i>商品分类</el-menu-item>
+        <el-menu-item :index="l2.path" v-for="l2 in item.children" :key="l2.id"><i class="el-icon-menu"></i> {{ l2.authName }} </el-menu-item>
 
       </el-submenu>
 
@@ -68,6 +45,17 @@
 
 <script>
 export default {
+  data () {
+    return {
+      leftList: []
+    }
+  },
+  async created () {
+    // 拿到左侧菜单列表
+    const res = await this.$axios.get('menus')
+    // console.log(res)
+    this.leftList = res.data
+  },
   methods: {
     loginout () {
       // console.log(2)
@@ -89,6 +77,13 @@ export default {
           message: '已取消'
         })
       })
+    }
+  },
+  computed: {
+    defaultActive () {
+      // console.log(this.$route)
+      return this.$route.path.slice(1)
+      // slice截取 从 下标1开始
     }
   }
 }
