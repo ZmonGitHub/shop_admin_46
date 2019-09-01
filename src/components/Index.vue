@@ -48,9 +48,9 @@
           <span>商品管理</span>
         </template>
         <template slot="title"></template>
-        <el-menu-item index="3-1"><i class="el-icon-menu"></i>商品列表</el-menu-item>
+        <el-menu-item index="goods"><i class="el-icon-menu"></i>商品列表</el-menu-item>
         <el-menu-item index="3-2"><i class="el-icon-menu"></i>分类参数</el-menu-item>
-        <el-menu-item index="3-2"><i class="el-icon-menu"></i>商品分类</el-menu-item>
+        <el-menu-item index="categories"><i class="el-icon-menu"></i>商品分类</el-menu-item>
 
       </el-submenu>
 

@@ -2,10 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './components/Login.vue'
 import Index from './components/Index.vue'
-import Users from './components/Users.vue'
-import Rights from './components/Rights.vue'
-import Roles from './components/Roles.vue'
-
+import Users from './components/users/Users.vue'
+import Rights from './components/rights/Rights.vue'
+import Roles from './components/rights/Roles.vue'
+import Goods from './components/goods/goods.vue'
+import Categories from './components/goods/categories.vue'
 Vue.use(Router)
 
 // 这里让 router等于这个路由规则，拿到路由实例以后下面守卫
@@ -20,7 +21,9 @@ const router = new Router({
       children: [
         { path: '/users', component: Users },
         { path: '/rights', component: Rights },
-        { path: '/roles', component: Roles }
+        { path: '/roles', component: Roles },
+        { path: '/goods', component: Goods },
+        { path: '/categories', component: Categories }
       ]
 
     }
