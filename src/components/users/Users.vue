@@ -40,7 +40,7 @@
             <!-- 修改功能 -->
            <el-button type="primary" icon="el-icon-edit" plain size="small" @click="editBox(obj.row)"></el-button>
            <el-button type="danger" icon="el-icon-delete" plain size="small"  @click="openDel(obj.row.id)" ></el-button>
-           <el-button type="success" icon="el-icon-check" plain size="small">分配角色</el-button>
+           <el-button type="success" icon="el-icon-check" plain size="small" @click="showCateBox(obj.row)">分配角色</el-button>
            </template>
         </el-table-column>
 
@@ -113,6 +113,37 @@
     <el-button type="primary" @click="sureEdit">确 定</el-button>
     </span>
   </el-dialog>
+
+  <!-- 这里分配角色对话框 -->
+  <el-dialog
+  title="分配角色"
+  :visible.sync="cateVisible"
+  width="40%">
+
+  <el-form ref="form" :model="cateForm" label-width="80px">
+    <el-form-item label="用户名">
+      <el-tag type="info"> {{ cateUsername }} </el-tag>
+    </el-form-item>
+      <el-form-item label="角色列表">
+        <template>
+          <!-- select应该双向数据绑定绑定角色id -->
+          <el-select v-model="cateForm.rid" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </template>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="cateVisible = false">取 消</el-button>
+    <el-button type="primary" @click="sureCate" >确 定</el-button>
+  </span>
+</el-dialog>
+
   </div>
 </template>
 
@@ -121,6 +152,13 @@
 export default {
   data () {
     return {
+      options: [],
+      cateUsername: '',
+      cateVisible: false,
+      cateForm: {
+        id: '',
+        rid: ''
+      },
       query: '',
       pagenum: 1,
       pagesize: 2,
@@ -163,8 +201,45 @@ export default {
     this.getUserslist()
   },
   methods: {
+    async sureCate () {
+      // console.log(777)
+      // 点击确定按钮发送ajax,成功了就提示，错误也提示，关闭对话框，重新渲染
+      const { meta } = await this.$axios.put(`users/${this.cateForm.id}/role`, { rid: this.cateForm.rid })
+      // console.log(res)
+      if (meta.status === 200) {
+        this.$message.success(meta.msg)
+        // 关闭对话框，重新渲染
+        this.cateVisible = false
+        this.getUserslist()
+      } else {
+        this.$message.error(meta.msg)
+      }
+    },
+    async showCateBox (row) {
+      this.cateVisible = true
+      // 显示盒子的时候发送ajax进行数据回显
+      const { data, meta } = await this.$axios.get('roles')
+      // console.log(data)
+      if (meta.status === 200) {
+        this.options = data
+      } else {
+        this.$message.error(meta.msg)
+      }
+      // 再发一个ajax传id拿到该用户的角色id
+      const res = await this.$axios.get(`users/${row.id}`)
+      // console.log(res)
+      const rid = res.data.rid
+      this.cateForm.rid = rid === -1 ? '' : rid
+      // 得到一个data数组里面是角色列表
+      // console.log(row)
+      // 需要拿到点击的该用户的角色的 id
+      // 可以拿到id
+      // 在这里需要回显用户名 用户id，并且回显角色列表选项，和渲染角色列表
+      this.cateForm.id = row.id
+      this.cateUsername = row.username
+    },
     editBox (row) {
-      console.log(row)
+      // console.log(row)
       this.editVisible = true
       this.editForm.id = row.id
       this.editForm.username = row.username
