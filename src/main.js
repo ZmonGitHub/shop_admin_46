@@ -8,14 +8,20 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
+import moment from 'moment'
 
 // 引入了ElementUi
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+// Vue.use(moment)
+
 // 基于Vue的插件需要use一下
 Vue.prototype.$axios = axios
 // 把axios绑定要Vue原型上 使用方法：this.$axios.get(.....)
-
+// 过滤时间，  *1000是因为后台传输的数据是秒，正常是毫秒
+Vue.filter('time', function (value) {
+  return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss')
+})
 // 配置 axios 默认请求的基础地址, 将来所有的请求, 都会在前面拼上这个地址
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
 

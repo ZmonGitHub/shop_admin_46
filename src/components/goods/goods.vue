@@ -22,9 +22,12 @@
         >
       </el-table-column>
        <el-table-column
-        prop="add_time"
+
         label="创建时间"
         >
+        <template v-slot:default="{row}">
+          {{ row.add_time | time }}
+        </template>
       </el-table-column>
        <el-table-column
         label="操作" >
