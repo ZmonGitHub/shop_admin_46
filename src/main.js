@@ -9,10 +9,17 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import moment from 'moment'
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 // 引入了ElementUi
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(VueQuillEditor /* { default global options } */)
 // Vue.use(moment)
 
 // 基于Vue的插件需要use一下
