@@ -7,7 +7,7 @@ import Rights from './components/rights/Rights.vue'
 import Roles from './components/rights/Roles.vue'
 import Goods from './components/goods/goods.vue'
 import Categories from './components/goods/categories.vue'
-import GoodsAdd from './components/goods/goodsAdd.vue'
+import GoodsAdd from './components/goods/goods-Add.vue'
 Vue.use(Router)
 
 // 这里让 router等于这个路由规则，拿到路由实例以后下面守卫
@@ -25,7 +25,7 @@ const router = new Router({
         { path: '/roles', component: Roles },
         { path: '/goods', component: Goods },
         { path: '/categories', component: Categories },
-        { path: '/goodsAdd', component: GoodsAdd }
+        { path: '/goods-Add', component: GoodsAdd }
       ]
 
     }

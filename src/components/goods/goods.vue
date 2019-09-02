@@ -65,7 +65,7 @@ export default {
     goodsAdd () {
       // console.log(66)
       // 点击跳转到goodsadd,不是通过路由跳转的，需要自己携带头，
-      this.$router.push('/goodsAdd')
+      this.$router.push('/goods-Add')
       // 这个用router整个路由，不是当前路由
     },
     handleSizeChange (val) {

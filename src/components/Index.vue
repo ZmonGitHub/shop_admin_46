@@ -82,8 +82,8 @@ export default {
   computed: {
     defaultActive () {
       // console.log(this.$route)
-      return this.$route.path.slice(1)
-      // slice截取 从 下标1开始
+      return this.$route.path.slice(1).split('-')[0]
+      // slice截取 从 下标1开始,split以-分割，取第一项goods-Add，那到Goods，就可以也默认高亮
     }
   }
 }

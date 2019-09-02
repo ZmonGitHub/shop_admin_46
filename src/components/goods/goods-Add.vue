@@ -1,5 +1,5 @@
 <template>
-  <div class="goodsAdd">
+  <div class="goods-Add">
     这个是goodsAdd页面
   </div>
 </template>
